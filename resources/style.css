@@ -1,0 +1,14 @@
+body {
+	font: 1em sans-serif;
+	line-height: 1.5;
+	color: #444444;
+}
+
+a:link, a:visited {
+	color: #4466AA;
+	text-decoration: underline;
+}
+a:active, a:hover {
+	color: #6699BB;
+	text-decoration: none;
+}
