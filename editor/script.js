@@ -1,24 +1,67 @@
+'use strict';
+
 function cancel(e) {
 	e.preventDefault();
 }
 
 let lastContentIndex = -1;
 
-function pick(list) {
-	return list[(Math.random() * list.length)|0];
+function randInt(limit) {
+	return (Math.random() * limit)|0;
 }
 
-function populateVars(content) {
-	const choices = [];
-	return content.replace(/\{\{([^\}0-9]+)([0-9]*)\}\}/g, (m, type, ind) => {
-		let raw = '';
-		if (ind !== '' && choices[+ind]) {
-			v = choices[+ind];
+function pickIndex(list, taken) {
+	let takenCount = 0;
+	for (const v of taken) {
+		takenCount += v ? 1 : 0;
+	}
+	if (takenCount >= list.length) {
+		return randInt(list.length);
+	}
+	let v = randInt(list.length - takenCount);
+	for (let i = 0; i <= v; ++ i) {
+		if (taken[i]) {
+			++ v;
+		}
+	}
+	return v;
+}
+
+function applyPrefix(prefix, v) {
+	return prefix + v.replace(/\n/g, '\n' + prefix);
+}
+
+function populateVars(content, memory = null) {
+	if (content.indexOf('{{') === -1) {
+		return content;
+	}
+	if (!memory) {
+		memory = new Map();
+	}
+	return content.replace(/\{\{([^{}:]*?):?([a-zA-Z]+)([0-9]*)\}\}/g, (m, prefix, type, ind) => {
+		const canonicalType = type.toLowerCase();
+		let typeMemory = memory.get(canonicalType);
+		if (!typeMemory) {
+			typeMemory = {choices: [], taken: []};
+			memory.set(canonicalType, typeMemory);
+		}
+		let v = '';
+		if (ind !== '' && typeMemory.choices[+ind]) {
+			v = typeMemory.choices[+ind];
 		} else {
-			v = pick(rand[type.toLowerCase()]);
-			if (ind !== '') {
-				choices[+ind] = v;
+			const list = rand[canonicalType];
+			if (!list) {
+				throw 'Unknown type: ' + canonicalType;
 			}
+			const i = pickIndex(list, typeMemory.taken);
+			v = populateVars(list[i], memory);
+			if (ind !== '') {
+				typeMemory.choices[+ind] = v;
+				typeMemory.taken[i] = true;
+			}
+		}
+		if (prefix) {
+			v = applyPrefix(prefix, v);
 		}
 		if (type === type.toLowerCase()) {
 			return v.toLowerCase();
@@ -31,7 +74,7 @@ function populateVars(content) {
 }
 
 function pickContent() {
-	let index = (Math.random() * (blocks.length - 1))|0;
+	let index = randInt(blocks.length - 1);
 	if (index === lastContentIndex) {
 		index = blocks.length - 1;
 	}
@@ -40,8 +83,6 @@ function pickContent() {
 }
 
 window.addEventListener('load', () => {
-	'use strict';
-
 	const hold = document.getElementById('hold');
 	const output = document.getElementById('typed');
 	const input = document.createElement('textarea');
@@ -86,7 +127,7 @@ window.addEventListener('load', () => {
 		const delay = now - lastKeyPress;
 		let reps = 1;
 		if (delay < 200) {
-			reps = (Math.random() * (maxReps - minReps) + minReps)|0;
+			reps = randInt(maxReps - minReps) + minReps;
 		}
 		for (let i = 0; i < reps; ++ i) {
 			writeNext();

@@ -1,12 +1,13 @@
 const rand = {
+	'number': ['0', '1', '2', '5', '-1'],
 	'local': [
 		'a',
 		'e',
-		'i', 'i', 'i', 'i',
+		'i',
 		'j',
 		'p',
 		't',
-		'x', 'x',
+		'x',
 		'y',
 	],
 	'var': [
@@ -35,6 +36,8 @@ const rand = {
 		'Push',
 		'Clear',
 		'Add',
+		'Remove',
+		'Delete',
 		'Get',
 		'Set',
 		'Pick',
@@ -106,27 +109,91 @@ const rand = {
 		'Consumer',
 		'Window',
 	],
+
+	'expression': [
+		`{{noun0}}.{{verb}}{{Noun}}({{var1}}, {{var2}})`,
+		`{{noun0}}.{{verb}}({{local1}})`,
+		`{{Noun1}}.{{verb}}{{Noun}}({{var0}}, {{local0}})`,
+		`{{Noun1}}.{{verb}}{{Noun}}({{var0}}, {{var1}})`,
+		`{{verb}}({{var0}}) + {{verb}}({{local0}})`,
+		`{{noun0}} && {{var0}}`,
+		`{{noun0}} || {{var0}}`,
+	],
+	'statement': [
+		`{{Expression}};`,
+		`let {{noun1}} = {{Expression}};`,
+		`const {{noun1}} = {{Expression}};`,
+		`const {{noun1}} = new {{Noun1}}({{local0}});`,
+		`{{noun1}} = {{noun1}}Factory.{{verb}}{{Noun1}}({{var}});`,
+		`{{noun1}}Factory = {{noun1}}FactoryFactory.{{verb}}{{Noun1}}Factory({{var}});`,
+		`{{noun1}} = {{Expression}};`,
+		`{{noun1}} += {{Expression}};`,
+		`{{noun1}} -= {{Expression}};`,
+		`{{noun1}} = {{number}};`,
+		`{{noun1}} += {{number}};`,
+		`{{noun1}} -= {{number}};`,
+		`delete {{noun}}[{{number}}];`,
+		`delete {{var0}}[{{number}}];`,
+		`return {{Expression}};`,
+		`return {{number}};`,
+	],
+	'block': [
+`{{Statement}}`,
+`{{Statement}}
+{{Statement}}`,
+`{{Statement}}
+{{Statement}}
+{{Statement}}`,
+`{{Statement}}
+{{Statement}}
+return {{Expression}}`,
+`if ({{Expression}}) {
+{{	:Statement}}
+}`,
+`if ({{Expression0}}) {
+{{	:Statement0}}
+} else if ({{Expression1}}) {
+{{	:Statement1}}
+}
+{{Statement}}`,
+`if ({{Expression}}) {
+{{	:Statement0}}
+} else {
+{{	:Statement1}}
+}`,
+`try {
+{{	:Statement}}
+} catch (const {{local2}}) {
+{{	:Expression}};
+}`,
+`function {{verb}}{{Noun1}}({{local2}}) {
+{{	:Statement}}
+}`,
+`function {{verb}}{{Noun1}}({{local2}}) {
+{{	:Statement}}
+{{	:Statement}}
+}`,
+`function {{verb}}() {
+{{	:Statement}}
+{{	:Statement}}
+}`,
+	],
 };
 
 const blocks = [
+`{{Block}}`, `{{Block}}`, `{{Block}}`, `{{Block}}`,
+`import {{noun0}} from './{{Noun0}}.js';`,
+`export {{noun}};`,
+`export default {{noun}};`,
 `function {{verb}}({{local0}}, {{local1}}) {
 	{{local0}}.{{verb}}({{local1}});
 }`,
-`function {{verb}}{{Noun}}({{var0}}, {{local1}}) {
-	return {{verb}}({{var0}}) + {{verb}}({{local1}});
+`function {{verb}}{{Noun0}}({{var0}}, {{local0}}) {
+	return {{verb}}({{var0}}) + {{verb}}({{local0}});
 }`,
 `function {{verb}}({{var0}}) {
 	{{var0}}.{{verb}}Default();
 }`,
-`let {{noun}} = {{Noun}}.{{verb}}{{Noun}}({{var}}, {{local}});`,
-`const {{noun}} = {{Noun}}.{{verb}}{{Noun}}({{var}}, {{var}});`,
-`import {{noun0}} from './{{Noun0}}.js';`,
-`export {{noun}};`,
-`export default {{noun}};`,
-`delete {{noun}};`,
-`{{noun}}.{{verb}}{{Noun}}({{var}}, {{var}});`,
-`{{noun0}} = {{noun0}}Factory.{{verb}}{{Noun0}}({{var}});`,
-`{{noun0}}Factory = {{noun0}}FactoryFactory.{{verb}}{{Noun0}}Factory({{var}});`,
 `function {{verb}}{{Noun0}}() {
 	let new{{Noun0}} = {{noun0}}[(Math.random() * ({{noun0}}.length))|0];
 	if (new{{Noun0}} === old{{Noun0}}) {
@@ -137,6 +204,25 @@ const blocks = [
 `function pad2(v) {
 	v = String(v);
 	return '00'.substr(v.length) + v;
+}`,
+`class {{Adjective}}{{Noun0}} {
+	constructor({{var0}}, {{var1}}, {{var2}}) {
+		this.{{noun1}} = {{Expression}};
+		this.{{var3}} = {{Expression}};
+		this.{{var4}} = {{number}};
+	}
+
+	{{verb}}({{var5}}) {
+{{		:Block}}
+	}
+
+	{{verb}}() {
+{{		:Block}}
+	}
+
+	{{verb}}() {
+{{		:Block}}
+	}
 }`,
 `class {{Adjective}}{{Noun0}} {
 	constructor({{var2}}) {
@@ -186,21 +272,21 @@ const blocks = [
 }`,
 `next{{Noun}}() {
 	const {{var0}} = 0x100000000;
-	let x0 = s[0];
-	let x1 = s[1];
-	const y0 = s[2];
-	const y1 = s[3];
-	s[0] = y0;
-	s[1] = y1;
-	x0 ^= (x0 << 23) | (x1 >>> 9);
-	x1 ^= (x1 << 23);
-	s[2] = x0 ^ y0 ^ (x0 >>> 17) ^ (y0 >>> 26);
+	let {{local0}}0 = s[0];
+	let {{local0}}1 = s[1];
+	const {{local1}}0 = s[2];
+	const {{local1}}1 = s[3];
+	s[0] = {{local1}}0;
+	s[1] = {{local1}}1;
+	{{local0}}0 ^= ({{local0}}0 << 23) | ({{local0}}1 >>> 9);
+	{{local0}}1 ^= ({{local0}}1 << 23);
+	s[2] = {{local0}}0 ^ {{local1}}0 ^ ({{local0}}0 >>> 17) ^ ({{local1}}0 >>> 26);
 	s[3] = (
-		x1 ^ y1 ^
-		((x0 << 15) | (x1 >>> 17)) ^
-		((y0 << 6) | (y1 >>> 26))
+		{{local0}}1 ^ {{local1}}1 ^
+		(({{local0}}0 << 15) | ({{local0}}1 >>> 17)) ^
+		(({{local1}}0 << 6) | ({{local1}}1 >>> 26))
 	);
-	return (((s[3] + y1) >>> 0) % {{var0}}) / {{var0}};
+	return (((s[3] + {{local1}}1) >>> 0) % {{var0}}) / {{var0}};
 }`,
 `function {{verb0}}Attrs({{var1}}) {
 	const attrs = {};
